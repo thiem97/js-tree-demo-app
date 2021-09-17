@@ -1,0 +1,42 @@
+.deleteIconRippleInput {
+  width: 30px;
+  height: 30px;
+  float: right;
+  right: 8px;
+  margin-top: 0 !important;
+  outline: none !important;
+}
+
+.tooltipStyles {
+  font-weight: 400 !important;
+  font-style: normal !important;
+  font-size: 12px !important;
+  line-height: 16px !important;
+  letter-spacing: 0.4px !important;
+  margin-top: 8px !important;
+}
+
+.iconStyling {
+  width: 18px !important;
+  height: 18px !important;
+  float: right;
+  cursor: pointer;
+}
+
+.editIconInput {
+  width: 18px !important;
+  height: 18px !important;
+  float: right;
+  cursor: pointer;
+}
+
+.deleteIconInput {
+  /* color: rgb(117, 117, 117); */
+  width: 18px !important;
+  height: 18px !important;
+  float: right;
+  cursor: pointer;
+  /* margin-top: -3px !important; */
+}
+
+
