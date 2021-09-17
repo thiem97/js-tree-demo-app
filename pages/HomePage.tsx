@@ -198,9 +198,9 @@ function HomePage() {
         minimumTreeIndex: sibling.treeIndex + youngerSibling,
         newNode: {
           title: value,
-          
           expanded:true
         },
+        getNodeKey,
         ignoreCollapsed: false,
         expandParent: false,
       });
@@ -260,6 +260,7 @@ function HomePage() {
           title: value,
           expanded:true
         },
+        getNodeKey,
         ignoreCollapsed: false,
         expandParent: true,
       });
