@@ -32,10 +32,16 @@ function HomePage() {
   const [currItem, setCurrItem] = useState("");
   const [currNode, setCurrNode] = useState();
   const [inputBlur, setInputBlur] = useState(false);
+  
   const [addChild, setAddChild] = useState(false);
+  //for child input refactor
+  const [childInput, setChildInput] = useState(false);
+  const [newInputValue2, setNewInputValue2] = useState("");
+  const [currItemToAddChild, setCurrItemToAddChild] = useState();
   let inputRef: HTMLInputElement;
   let inputEl: HTMLInputElement;
   let inputElChild:  HTMLInputElement;
+  let inputElAddNewChild:  HTMLInputElement;
   const add = (e: any) => {
      e.preventDefault();
     const key = e.which || e.keyCode;
@@ -90,9 +96,6 @@ function HomePage() {
     setTreeData(newTree);
   }
 
-
-
-  let currNode2;
   
   const updateNode = (e, rowInfo) => {
     const key = e.which || e.keyCode;
@@ -139,6 +142,7 @@ function HomePage() {
       //currNode2 = newNode.matches[0].treeIndex;
       //console.log(currNode2);
       setTreeData(newTree);
+      console.log(rowInfo);
     }
   }
   
@@ -159,7 +163,19 @@ function HomePage() {
   
   useEffect(() => {
     setCurrItem(editingValue)
-  },[editingValue])
+  }, [editingValue])
+  
+  const setAddingChildInput = (rowInfo) => {
+    if (rowInfo.node.children === undefined) {
+        setAddChild(false);
+      } else {
+        setAddChild(true);
+    }
+    console.log(rowInfo.treeIndex)
+    setCurrNode(rowInfo.treeIndex);
+    setChildInput(true);
+    //setCurrItemToAddChild(rowInfo.treeIndex)
+  }
 
   function addNodeSibling(e, rowInfo) {
     //e.preventDefault();
@@ -209,7 +225,6 @@ function HomePage() {
       const pob = rowInfo.node.children?  rowInfo.node.children.length : 0;
       
       setTreeData(newTree.treeData);
-      
       if (!addChild) {
         setCurrNode(sibling.treeIndex + 1)
       }
@@ -282,6 +297,106 @@ function HomePage() {
     inputElChild.focus();
     setNewInputValue("");
   }
+
+
+  function addNodeChild(e, rowInfo) {
+    let { path } = rowInfo;
+
+    const value = newInputValue2;
+    // const value = inputEls.current[treeIndex].current.value;
+     //setCurrItemToAddChild(rowInfo.treeIndex);
+    // if (value === "") {
+    //   inputElAddNewChild?.current.focus();
+    //   // inputEls.current[treeIndex].current.focus();
+    //   return;
+    // }
+    const key = e.which || e.keyCode;
+    if (key === 13 && newInputValue2 !== "") {
+      var sibling:any = getNodeAtPath({
+                  treeData:treeData,
+                  path,
+                  getNodeKey,
+                  ignoreCollapsed: false,
+      })
+
+      var youngerSibling:any = true;
+
+      let newTree = insertNode({
+        treeData: treeData,
+        depth: path.length,
+        minimumTreeIndex: sibling.treeIndex + youngerSibling,
+        newNode: {
+          title: newInputValue2,
+          expanded:true
+        },
+        getNodeKey,
+        ignoreCollapsed: false,
+        expandParent: true,
+      });
+      setTreeData(newTree.treeData);
+      setCurrNode(sibling.treeIndex);
+      // const pob = rowInfo.node.children?  rowInfo.node.children.length : 0;
+      // setTreeData(newTree.treeData);
+      
+      // if (!addChild) {
+      //   setCurrNode(sibling.treeIndex)
+      // }
+      // if (addChild) {
+      //   setCurrNode(sibling.treeIndex + pob + 1)
+      // }
+      setNewInputValue2("");
+      //inputElAddNewChild?.current.value = "";
+    }
+  }
+
+
+  function addNodeChildWithCheck(e, rowInfo) {
+    let { path } = rowInfo;
+
+    const value = newInputValue2;
+    // const value = inputEls.current[treeIndex].current.value;
+     //setCurrItemToAddChild(rowInfo.treeIndex);
+    // if (value === "") {
+    //   inputElAddNewChild?.current.focus();
+    //   // inputEls.current[treeIndex].current.focus();
+    //   return;
+    // }
+      var sibling:any = getNodeAtPath({
+                  treeData:treeData,
+                  path,
+                  getNodeKey,
+                  ignoreCollapsed: false,
+      })
+
+      var youngerSibling:any = true;
+
+      let newTree = insertNode({
+        treeData: treeData,
+        depth: path.length,
+        minimumTreeIndex: sibling.treeIndex + youngerSibling,
+        newNode: {
+          title: newInputValue2,
+          expanded:true
+        },
+        getNodeKey,
+        ignoreCollapsed: false,
+        expandParent: true,
+      });
+      setTreeData(newTree.treeData);
+      setCurrNode(sibling.treeIndex);
+      // const pob = rowInfo.node.children?  rowInfo.node.children.length : 0;
+      // setTreeData(newTree.treeData);
+      
+      // if (!addChild) {
+      //   setCurrNode(sibling.treeIndex)
+      // }
+      // if (addChild) {
+      //   setCurrNode(sibling.treeIndex + pob + 1)
+      // }
+    setNewInputValue2("");
+    inputElAddNewChild.focus();
+      //inputElAddNewChild?.current.value = "";
+  }
   
 
   useEffect(() => {
@@ -303,6 +418,7 @@ function HomePage() {
         setEditing(false);
         setAddsibling(false);
         setInputBlur(false);
+        setChildInput(false);
         setNewInputValue("")
       }
     }
@@ -315,13 +431,43 @@ function HomePage() {
 
  
   return (
-    <div style={{ height: 'auto', overflowX: 'hidden', overflowY: 'auto',display:'flex',flexDirection:'column',justifyContent:'center',alignItems:'center',position:'relative' }}>
+    <div style={{
+      height: 'auto', overflowX: 'hidden', overflowY: 'auto', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', position: 'relative'}}>
       <SortableTree isVirtualized={false} theme={MaterialTheme} treeData={treeData} onChange={(treeData: any) => setTreeData(treeData)} generateNodeProps={
-        (rowInfo) => ({
-          buttons: (
-            <div className="">
-              {isEditing && itemEditing === rowInfo.node ? (
-                <div className="flex">
+        (rowInfo) => ({          
+          title: (
+            <>
+              <div className="flex flex-col">
+                <div>{isEditing && itemEditing === rowInfo.node ? (
+                  <div >
+                    <div
+                      style={{ width: `${480 - (rowInfo.path.length * 25)}px`,backgroundColor:'#e0e0e0',height:'1px' }}
+                    ></div>
+                    <div className="flex items-center w-full my-1" style={{ width: `${450 - (rowInfo.path.length * 25)}px`,height:'25px' }}>
+                  <input
+                        autoFocus
+                        type="text"
+                        ref={(node) => {
+                          if (node) {
+                            inputEl = node;
+                          }
+                        }}
+                        value={editingValue}
+                        onClick={(e) => { setEditing(true); }}
+                        onChange={(e) => {
+                          setEditingValue(
+                            (e.target as HTMLInputElement).value
+                          );
+                        }}
+                    
+                      className="flex-1 w-full truncate"
+                      onKeyUp={(e) => {
+                        updateNode(e, rowInfo);
+                      }}
+                      //onBlur={(e) => { setEditing(false);}}
+                     style={{ background: 'transparent',outline:'none',border:'none',cursor:'pointer',margin:'0px 18px'}}
+                  />
+                  <div className="absolute right-0 flex">
                   <div className="order-1">
                     <IconButton
                   className={
@@ -371,12 +517,29 @@ function HomePage() {
                  </div>
                
                 </div>
-              ) : <div className="flex hide">
+                    </div>
+                     <div
+                      style={{ width: `${480 - (rowInfo.path.length * 25)}px`,backgroundColor:'#e0e0e0',height:'1px' }}
+                    ></div>
+                    </div>
+              ) : (
+                <div className="flex justify-between">
+              <div className="flex" style={{height:'35px'}}>
+                 <i className='self-center material-icons hide'
+                style={{ fontSize: 18,color:'#757575' }}>
+                          drag_indicator
+                        </i>
+                        <div style={{ width: `${450 - (rowInfo.path.length * 25)}px` }} className={`self-center w-full truncate itemName`} onClick={(e) => { editItem(rowInfo.node);}}>
+                {rowInfo.node.title}</div>
+              
+                     </div>
+                  <div className="absolute right-0 flex self-center hide">
                   <div className="order-1">
                     <IconButton
                 className={
                   styles.deleteIconRippleInput
                 }
+                      onClick={() => setAddingChildInput(rowInfo)}
               >
                                         
                 <Tooltip
@@ -437,89 +600,59 @@ function HomePage() {
                   </Tooltip>
                 </IconButton>
                 </div>
-              </div>}
-            </div>
-          ),
-          icons: (
-            <i className='material-icons'
-        style={{ fontSize: 18,color:'#757575'  }}>
-                  drag_indicator
-                </i>
-              ),
-              title: (
-              <>
-              {
-                    isEditing && itemEditing === rowInfo.node ? <>
-                      <div style={{ width: '480px', position: 'absolute', bottom: '0px',top:'8px', background: 'rgba(158, 158, 158, 1)', height: '1px', left: '0px' }}></div>
-                      <div style={{ width: '480px', position: 'absolute', bottom: '12px', background: 'rgba(158, 158, 158, 1)', height: '1px', left: '0px' }}></div>
-                      <input
-                        autoFocus
-                        type="text"
-                        ref={(node) => {
-                          if (node) {
-                            inputEl = node;
-                          }
-                        }}
-                        value={editingValue}
-                        onClick={(e) => { setEditing(true); }}
-                        onChange={(e) => {
-                          setEditingValue(
-                            (e.target as HTMLInputElement).value
-                          );
-                        }}
-                      
-                      
-                      onKeyUp={(e) => {
-                        updateNode(e, rowInfo);
-                      }}
-                      //onBlur={(e) => { setEditing(false);}}
-                       //className="inputStyle"
-                      style={{ background: 'transparent', width: '480px',outline:'none',border:'none',cursor:'pointer'}}
-                    />
-                      </>
-                      : <span className='w-full itemName' onClick={(e) => { editItem(rowInfo.node);}}>
-                        {rowInfo.node.title}</span>
-                      
+              </div>
+
+
+                  </div>
+              
+                )}
+                </div>
+                <div>
+              {addSibling && currNode === rowInfo.treeIndex ? (
+                    <div>
+                      <div
+                      style={{ width: `${480 - (rowInfo.path.length * 25)}px`,backgroundColor:'#e0e0e0',height:'1px' }}
+                    ></div>
+                      <div className="flex items-center w-full my-1" style={{ width: `${420 - (rowInfo.path.length * 25)}px`,height:'25px' }}>
                         
-                  }
-                
-                  {addSibling && currNode === rowInfo.treeIndex ? (
-                    <>
-                      {/* <Divider className="proba" style={{ position: 'absolute', top: '29px !important', width: '500px' }} /> */}
-                      <div style={{ width: '480px', position: 'absolute', bottom: '12px', background: 'rgba(158, 158, 158, 1)', height: '1px', left: '0px' }}></div>
-                       <div style={{width:'480px',position: 'absolute',bottom:'-10px',background:'rgba(158, 158, 158, 1)',height:'1px',left:'0px'}}></div>
-                    <div className="flex ">
                      <input
-                        autoFocus
-                        type="text"
-                        //onBlur={(e) => setAddsibling(false)}
-                        placeholder="+New item"
-                        ref={(node) => {
-                          if (node) {
-                            inputElChild = node;
-                          }
-                        }}
-                      value={newInputValue}
-                      onChange={(e) => {
-                        setNewInputValue(
-                          (e.target as HTMLInputElement).value
-                        )
-                      }}
-                        onKeyUp={(e) => {
-                          addNodeSibling(e, rowInfo);
-                        }}
-                     className="proba"
-                      style={{ background: 'transparent', width: '480px',height:'30px',outline:'none',border:'none',cursor:'pointer'}}
-                    />
-                      {
-                        // newInputValue && (
-                            <div>
-                              <IconButton
+                          autoFocus
+                          type="text"
+                          //onBlur={(e) => setAddsibling(false)}
+                          placeholder="+New item"
+                          ref={(node) => {
+                            if (node) {
+                              inputElChild = node;
+                            }
+                          }}
+                          value={newInputValue}
+                          onChange={(e) => {
+                            setNewInputValue(
+                              (e.target as HTMLInputElement).value
+                            )
+                          }}
+                          onKeyUp={(e) => {
+                            addNodeSibling(e, rowInfo);
+                          }}
+                         className="w-full truncate"
+                          style={{
+                            background: 'transparent', outline: 'none', border: 'none', cursor: 'pointer',
+                           //position: 'absolute',
+                            // top: '30px',
+                            // right: '0px',
+                            marginLeft: `${rowInfo.path.length * 5}px`,
+                            // width:'100%'
+                          }}
+                        />
+
+
+                        <div className="absolute right-0 flex">
+                           <IconButton
                                       className={
                           styles.deleteIconRippleInput
                         }
                               disabled={newInputValue ? false : true}
-                        style={{ position: 'absolute', top: '30px', right: '40px'}}
+                        //style={{ position: 'absolute', top: '32px', right: '40px'}}
                         onClick={(e) => { addItemWithCheck(e,rowInfo);}}
                                     >
                                       <Tooltip
@@ -544,7 +677,7 @@ function HomePage() {
                     e.currentTarget.blur();
                     setNewInputValue("");
                   }}
-                              style={{ position: 'absolute', top: '30px', right: '10px' }}
+                             // style={{ position: 'absolute', top: '32px', right: '10px' }}
                 >
                   <Tooltip
                     title="Cancel"
@@ -560,15 +693,106 @@ function HomePage() {
                     />
                   </Tooltip>
                       </IconButton>
+                        </div>
                
-                            </div>
-                        // )
-                    }
                       </div>
-                      </>
+                       <div
+                      style={{ width: `${480 - (rowInfo.path.length * 25)}px`,backgroundColor:'#e0e0e0',height:'1px' }}
+                    ></div>
+                      </div>
                   ) : ""}
-                
-                              
+
+                  {
+                    childInput && currNode === rowInfo.treeIndex ? (
+                      <div>
+                         <div
+                      style={{ width: `${480 - (rowInfo.path.length * 25)}px`,backgroundColor:'#e0e0e0',height:'1px' }}
+                        ></div>
+                        <div className="flex items-center w-full my-1" style={{ width: `${420 - (rowInfo.path.length * 25)}px`,height:'25px' }}>
+                        <input
+                        autoFocus
+                        type="text"
+                        //onBlur={(e) => setAddsibling(false)}
+                        placeholder="+New child"
+                        ref={(node) => {
+                          if (node) {
+                            inputElAddNewChild = node;
+                          }
+                        }}
+                      value={newInputValue2}
+                      onChange={(e) => {
+                        setNewInputValue2(
+                          (e.target as HTMLInputElement).value
+                        )
+                      }}
+                        onKeyUp={(e) => {
+                          addNodeChild(e, rowInfo);
+                        }}
+                    className="w-full truncate"
+                      style={{ background: 'transparent',outline:'none',border:'none',cursor:'pointer',marginLeft: `${rowInfo.path.length * 5}px`,
+                            }}
+                          />
+                           <div className="absolute right-0 flex">
+                        <IconButton
+                                      className={
+                          styles.deleteIconRippleInput
+                        }
+                              disabled={newInputValue2 ? false : true}
+                        //style={{ position: 'absolute', top: '32px', right: '40px'}}
+                        onClick={(e) => { addNodeChildWithCheck(e,rowInfo);}}
+                                    >
+                                      <Tooltip
+                                        title="Done"
+                                        placement="bottom"
+                                        enterDelay={750}
+                                        classes={{
+                                          tooltip: styles.tooltipStyles,
+                                        }}
+                                      >
+                          <CheckIcon
+                            //onClick={(e) => { addItemWithCheck(e,rowInfo);}}
+                          className={`base-input-class ${styles.editIconInput} ${styles.show}`}
+                                        />
+                                      </Tooltip>
+                          </IconButton>
+
+                        <IconButton
+                  className={styles.deleteIconRippleInput}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setChildInput(false);
+                    e.currentTarget.blur();
+                    setNewInputValue2("");
+                  }}
+                              //style={{ position: 'absolute', top: '32px', right: '10px' }}
+                >
+                  <Tooltip
+                    title="Cancel"
+                    placement="bottom"
+                    enterDelay={750}
+                    classes={{
+                      tooltip: styles.tooltipStyles,
+                    }}
+                  >
+                    <ClearIcon
+                            className={`base-input-class ${styles.deleteIconInput} ${styles.show}`}
+                             
+                    />
+                  </Tooltip>
+                            </IconButton>
+                            </div>
+                      </div>
+                      <div
+                      style={{ width: `${480 - (rowInfo.path.length * 25)}px`,backgroundColor:'#e0e0e0',height:'1px' }}
+                    ></div>
+                      </div>
+                      
+                    ) : ("")
+                  }
+
+
+                  </div>
+                </div>
               </>
               )
             })
