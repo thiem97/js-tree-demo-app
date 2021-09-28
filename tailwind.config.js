@@ -6,7 +6,10 @@ module.exports = {
     extend: {
       boxShadow: {
         custom:
-          "0 -5px 5px -5px rgba(0, 0, 0, 0.4), 0px 5px 5px -5px rgba(0, 0, 0, 0.4)",
+          "0 -5px 5px -5px rgba(0, 0, 0,0.8), 0px 5px 5px -5px rgba(0, 0, 0,0.8)",
+      },
+      zIndex: {
+        custom:999
       },
     },
   },

@@ -135,7 +135,7 @@ function HomePage() {
       setInputBottomLabel(false);
     }
     if (key === 13 && inputValue !== "") {
-      setTreeData(treeData.concat({ title: inputValue }));
+      setTreeData(treeData.concat({ title: inputValue,id: Date.now(),eventName:"",url: "" }));
       inputRef?.focus();
       inputRef?.select();
       inputRef.value = "";
@@ -171,6 +171,7 @@ function HomePage() {
       path,
       getNodeKey,
       newNode: {
+        ...node,
         title: value,
         children,
         expanded: true,
@@ -183,6 +184,10 @@ function HomePage() {
   const updateNode = (e, rowInfo) => {
     const key = e.which || e.keyCode;
     const value = inputEl?.value;
+    if (key === 27) {
+      inputEl?.blur();
+      setEditing(false);
+    }
     if (key === 13 && editingValue !== "") {
       const { node, path } = rowInfo;
       const { children } = node;
@@ -191,6 +196,7 @@ function HomePage() {
         path,
         getNodeKey,
         newNode: {
+          ...node,
           title: value,
           children,
           expanded: true,
@@ -230,6 +236,16 @@ function HomePage() {
 
     const value = newInputValue2;
     const key = e.which || e.keyCode;
+    if (key === 8 && newInputValue2 === "") {
+      inputElAddNewChild?.blur();
+      setChildInput(false);
+      setNewInputValue2("");
+    }
+    if (key === 27) {
+      inputElAddNewChild?.blur();
+      setChildInput(false);
+      setNewInputValue2("");
+    }
     if (key === 13 && newInputValue2 !== "") {
       let newTree = addNodeUnderParent({
         treeData: treeData,
@@ -443,7 +459,7 @@ function HomePage() {
                         }}
                       >
                         <i
-                          className="self-center material-icons hide"
+                            className={`self-center material-icons hide`}
                           style={{ fontSize: 18, color: "#757575" }}
                         >
                           drag_indicator
@@ -453,13 +469,14 @@ function HomePage() {
                             width: `${370 - rowInfo.path.length * 20}px`,
                             padding: "0px 2px",
                             cursor: "pointer",
-                            color: "212121 !important",
+                              //color: "#212121 !important",
+                            
                             // boxShadow:
                             //   "0 -5px 5px -5px rgba(0, 0, 0, 0.4), 0px 5px 5px -5px rgba(0, 0, 0, 0.4)",
                           }}
                           className={`self-center w-full truncate itemName ${
                             style && rowInfo.node === currentDraggingNode
-                              ? "shadow-custom opacity-100"
+                              ? "opacity-100 shadow-custom !z-custom !cursor-pointer"
                               : ""
                           }`}
                           onClick={(e) => {

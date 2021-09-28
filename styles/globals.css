@@ -97,28 +97,27 @@ input[type="text"] {
   padding: 0px !important;
   /* overflow:hidden !important; */
   opacity: 1 !important;
-  background-color: #f5f5f5 !important;
-  color: black !important;
+  background-color: #f5f5f5 !important; 
+  text-shadow:none !important;
 }
 
-.MuiNodeContent-contentNode:focus {
+
+.rst__tree{
+  opacity:1;
+}
+
+
+
+/* .MuiNodeContent-contentNode:focus {
   background-color: #f5f5f5 !important;
   background: #f5f5f5 !important;
   border: none !important;
-  opacity: 1 !important;
 }
 
-.MuiTreeNode-node:focus {
-  background-color: #f5f5f5 !important;
-  background: #f5f5f5 !important;
-  border: none !important;
-  opacity: 2 !important;
-}
 
-.MuiNodeContent-rowLandingPad {
+.MuiNodeContent-rowLandingPad  {
   background-color: #f5f5f5 !important;
   border: none !important;
-  opacity: 1 !important;
 }
 
 .MuiNodeContent-rowLandingPad > .itemName {
@@ -128,8 +127,7 @@ input[type="text"] {
 .MuiNodeContent-rowLandingPadDisable {
   background-color: #f5f5f5 !important;
   border: none !important;
-  opacity: 1 !important;
-}
+} */
 
 .hide {
   visibility: hidden;
@@ -137,4 +135,23 @@ input[type="text"] {
 
 .MuiNodeContent-row:hover .hide {
   visibility: visible;
+}
+
+.MuiNodeContent-row.MuiNodeContent-rowCancelPad::before{
+  border:none !important;
+  background-color: rgba(0,0,0,0.0.4) !important;
+  z-index:999;
+}
+
+.MuiNodeContent-row.MuiNodeContent-rowLandingPad::before{
+  border:none !important;
+  background-color: rgba(0,0,0,0.0.4) !important;
+}
+
+.MuiNodeContent-row.MuiNodeContent-rowLandingPad *, .MuiNodeContent-row.MuiNodeContent-rowCancelPad *{
+  opacity:1 !important;
+}
+
+.MuiNodeContent-rowIcon{
+  color: red !important;
 }
